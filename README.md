@@ -10,4 +10,4 @@ German discussion thread: [NGB.to Programming thread](https://ngb.to/threads/405
 [![Game video footage](https://www.picflash.org/img/2019/04/12/TBml5J5DIBP.webm.jpg "Game video footage")](https://www.picflash.org/viewer.php?img=ml5J5DIBP.webm)
 
 ## References
-The source code parts of the Perlin Noise originated here: https://codepen.io/Tobsta/post/procedural-generation-part-1-1d-perlin-noise
+The source code parts of the Perlin Noise originated here: [Reference Perlin Noise JS](https://codepen.io/Tobsta/post/procedural-generation-part-1-1d-perlin-noise)
