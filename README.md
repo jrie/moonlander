@@ -1,5 +1,5 @@
 # moonlander
-A HTML5 canvas moonlander game made for the NGB.to #4th competition, "Moonlander".
+A HTML5 canvas moonlander game made for the NGB.to #4th code competition titled "Moonlander".
 
 [![Moonlander Preview Image](https://www.picflash.org/img/2019/04/12/jhtozm6noma8722.png "Moonlander Preview")](https://www.picflash.org/viewer.php?img=jhtozm6noma8722.png)
 
