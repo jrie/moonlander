@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <head>
+       <title>Moonlander</title>
+       <meta charset="utf-8">
+       <link rel="stylesheet" type="text/css" href="style.css">
+    </head>
+    <body>
+        <canvas id="stage" width="1024" height="850"></canvas>
+
+        <div id="options">
+            <div class="optionsBlock">
+                <h4>Terrain</h4>
+                <label for="terrainType">Terrain Type:</label>
+                <span>Smooth</span><input name="terrainType" class="optionValue" type="radio" autocomplete="off" checked="checked" value="1" />
+                <span>Hard</span><input name="terrainType" class="optionValue" type="radio" autocomplete="off" value="0" />
+            </div>
+            <div class="optionsBlock">
+                <h4>Physics</h4>
+                <label for="moonGravity">Gravity</label>
+                <input name="moonGravity" class="optionValue" type="number" autocomplete="off" title="Default: 1.62" value="1.62" step="0.01" min="1.0" max="3.0" />
+
+                <h4>Wind options</h4>
+                <label for="moonWindMaxStrength">Max Strength</label>
+                <input name="moonWindMaxStrength" class="optionValue" type="number" autocomplete="off" title="Default: 2.0"  value="2" min="0.0" max="4.0" step="0.1" />
+
+                <label for="moonWindEnabled">Wind status</label>
+                <span>Enabled</span><input name="moonWindEnabled" class="optionValue" type="radio" autocomplete="off" checked="checked" value="1" />
+                <span>Disabled</span><input name="moonWindEnabled" class="optionValue" type="radio" autocomplete="off" value="0" />
+
+            </div>
+
+            <div class="optionsBlock">
+                <h4>Landing options</h4>
+                <label for="maxAngle">Max Angle</label>
+                <input name="maxAngle" class="optionValue" type="number" autocomplete="off" title="Default: 43" value="43" step="1" min="25" max="75" />
+
+                <label for="maxCollisionSpeed">Max Speed</label>
+                <input name="maxCollisionSpeed" class="optionValue" type="number" autocomplete="off" title="Default: 1.275" value="1.275" step="0.001" min="1.0" max="2.0" />
+            </div>
+
+            <div class="optionsBlock">
+                <h4>Fuel options</h4>
+                <label for="landerFull">Amount</label>
+                <input name="landerFull" class="optionValue" type="number" autocomplete="off" title="Default: 1.0" value="1.0" step="0.05" min="0.25" max="1.0" />
+
+                <label for="fuelConsumption">Consumption</label>
+                <input name="fuelConsumption" class="optionValue" type="number" autocomplete="off" title="Default: 125" value="125" step="5" min="0" max="500" />
+            </div>
+
+            <div class="optionsBlock">
+                <h4>Performance</h4>
+                <label for="landerParticleSprayCount">Particle amount</label>
+                <input name="landerParticleSprayCount" class="optionValue" type="number" autocomplete="off" title="Default: 25" value="25" step="1" min="5" max="50" />
+
+                <label for="preFetchTerrain">Img Terrain</label>
+                <input name="preFetchTerrain" class="optionValue" type="checkbox" autocomplete="off" value="true"title="Default: Unchecked" />
+            </div>
+        </div>
+
+        <script type="text/javascript" src="moonlander.js"></script>
+    </body>
+</html>

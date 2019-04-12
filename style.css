@@ -1,0 +1,64 @@
+body {
+    background-color: #333;
+    color: #667;
+}
+
+canvas {
+    border: 1px solid #666;
+}
+
+h1, h2, h3, h4 {
+    clear: both;
+    margin: 0px;
+    padding: 0px;
+    color: #889;
+}
+
+input {
+    margin: 0px;
+    padding: 5px;
+}
+
+#options {
+    float: left;
+    position: relative;
+    padding-right: 12px;
+    margin-right: 32px;
+    width: 21%;
+    min-width: 170px;
+}
+
+.optionsBlock {
+    border-bottom: 1px solid #446;
+    padding: 19px 14px;
+    width: 100%;
+    display: inline-block;
+}
+
+.optionsBlock h4 {
+    margin-top: 58px;
+}
+
+.optionsBlock h4:first-of-type {
+    margin-top: 0px;
+}
+
+.optionsBlock label {
+    float: left;
+    clear: both;
+    margin-bottom: 6px;
+}
+
+.optionsBlock label,
+.optionsBlock input {
+    margin-top: 12px;
+}
+
+.optionsBlock .optionValue {
+    float: right;
+}
+
+.optionsBlock span {
+    float: left;
+    clear: both;
+}
