@@ -37,10 +37,10 @@ function drawLanderSVG () {
   let hitboxCenter = new Path2D()
   let hitboxTop = new Path2D()
 
+  hitboxTop.arc(0, game.landerHeight * 0.25, game.landerHeight * 0.85, Math.PI * 1, 0)
   hitboxLeft.rect(game.landerWidth * -0.5, game.landerHeight * 0.25, game.landerWidth * 0.3, game.landerHeight * 0.275)
   hitboxRight.rect(game.landerWidth * 0.2, game.landerHeight * 0.25, game.landerWidth * 0.3, game.landerHeight * 0.275)
-  hitboxCenter.rect(game.landerWidth * -0.25, game.landerHeight * 0.45, game.landerWidth * 0.5, game.landerHeight * 0.075)
-  hitboxTop.arc(0, game.landerHeight * 0.25, game.landerHeight * 0.85, Math.PI * 1, 0)
+  hitboxCenter.rect(game.landerWidth * -0.35, game.landerHeight * 0.35, game.landerWidth * 0.7, game.landerHeight * 0.175)
 
   game.landerHitBoxes.length = 0
   game.landerHitBoxes = [hitboxTop, hitboxLeft, hitboxRight, hitboxCenter]
@@ -49,6 +49,7 @@ function drawLanderSVG () {
 
   dc.rotate(-newAngle)
   dc.translate(-game.landerX, -game.landerY)
+  dc.setTransform(1, 0, 0, 1, 0, 0)
 }
 
 // -----------------------------------------------
@@ -74,21 +75,14 @@ function checkCollision () {
 
   let newAngle = (Math.PI / 180) * game.landerAngle
 
-  dc.translate(game.landerX, game.landerY)
-  dc.rotate(newAngle)
-
-  let hitboxes = 0
-  let hitboxIndex = 0
   while (currentY < scanMaxY) {
     while (currentX < scanMaxX) {
-      dc.rotate(-newAngle)
-      dc.translate(-game.landerX, -game.landerY)
       if (dc.isPointInPath(game.terrain, game.landerX + currentX, game.landerY + currentY)) {
         dc.translate(game.landerX, game.landerY)
         dc.rotate(newAngle)
 
-        hitboxes = 0
-        hitboxIndex = 0
+        let hitboxes = 0
+        let hitboxIndex = 0
         for (let hitbox of game.landerHitBoxes) {
           if (dc.isPointInPath(hitbox, game.landerX + currentX, game.landerY + currentY)) {
             ++hitboxes
@@ -101,20 +95,17 @@ function checkCollision () {
 
         if (hitboxes !== 0) {
           if (hitboxIndex === 0 || (Math.abs(game.landerSpeedX) > game.maxCollisionSpeed || Math.abs(game.landerSpeedY > game.maxCollisionSpeed)) || (Math.abs(game.landerAngle) > game.maxAngle)) {
-            dc.rotate(-newAngle)
-            dc.translate(-game.landerX, -game.landerY)
             game.finished = true
             game.won = false
-
-            sprayEnvParticle('explosion')
+            dc.resetTransform()
+            sprayEnvParticle('explosion', game.landerX, game.landerY)
             window.requestAnimationFrame(draw)
             return
           } else if (hitboxes >= 2) {
-            dc.rotate(-newAngle)
-            dc.translate(-game.landerX, -game.landerY)
             game.won = true
             game.finished = true
-            window.requestAnimationFrame(draw)
+            dc.resetTransform()
+            animateWin()
             return
           }
         }
@@ -123,17 +114,14 @@ function checkCollision () {
         dc.translate(-game.landerX, -game.landerY)
       }
 
-      dc.translate(game.landerX, game.landerY)
-      dc.rotate(newAngle)
-      currentX += 1
+      ++currentX
     }
 
     currentX = -game.landerWidth * 0.5
     ++currentY
   }
 
-  dc.rotate(-newAngle)
-  dc.translate(-game.landerX, -game.landerY)
+  dc.setTransform(1, 0, 0, 1, 0, 0)
 }
 
 // -----------------------------------------------
@@ -151,22 +139,28 @@ function draw () {
   if (game.terrainImg === null) drawTerrain()
   checkCollision()
 
-  if (!game.finished || game.won) {
+  if (!game.finished) {
+    game.landerSpeedX += game.moonWindStrengthX * 0.005
+    game.landerSpeedY += game.moonWindStrengthY * 0.005
+    game.landerSpeedY += Math.sqrt(2 * game.moonGravity) * 0.005
+    game.landerX += game.landerSpeedX
+    game.landerY += game.landerSpeedY
     drawLanderSVG()
+  } else if (game.won) {
+    drawLanderSVG()
+    dc.font = 'bold 114px sans-serif'
+    dc.fillStyle = 'rgba(255,255,255,0.7)'
+    dc.fillText('GAME WON', (stage.width * 0.5) - (dc.measureText('GAME WON').width * 0.5), stage.height * 0.42)
+    dc.font = '10px sans-serif'
 
-    if (!game.won) {
-      game.landerSpeedX += game.moonWindStrengthX * 0.005
-      game.landerSpeedY += game.moonWindStrengthY * 0.005
-      game.landerSpeedY += Math.sqrt(2 * game.moonGravity) * 0.005
-      game.landerX += game.landerSpeedX
-      game.landerY += game.landerSpeedY
-    }
-  }
-
-  if (game.finished) {
     if (game.engineParticles.length === 0 && game.landerParticles.length === 0) return
-    window.requestAnimationFrame(draw)
-    return
+  } else {
+    dc.font = 'bold 114px sans-serif'
+    dc.fillStyle = 'rgba(255,255,255,0.7)'
+    dc.fillText('GAME LOST', (stage.width * 0.5) - (dc.measureText('GAME LOST').width * 0.5), stage.height * 0.42)
+    dc.font = '10px sans-serif'
+
+    if (game.engineParticles.length === 0 && game.landerParticles.length === 0) return
   }
 
   window.requestAnimationFrame(draw)
@@ -211,12 +205,15 @@ function drawStats () {
 }
 
 // -----------------------------------------------
-function sprayEnvParticle (type) {
+function sprayEnvParticle (type, x, y, xOffset, yOffset) {
+  let srcX = x
+  let srcY = y
+  let maxWaves = []
+  let colorAmountMin = false
+
   switch (type) {
     case 'explosion':
-      let srcX = game.landerX
-      let srcY = game.landerY
-      let maxWaves = [24, 16, 12, 5, 2, 1]
+      maxWaves = [24, 16, 12, 5, 2, 1]
       for (let waveSize of maxWaves) {
         for (let angle = 0; angle < 360; ++angle) {
           let angleX = -Math.cos(angle / 180 * Math.PI)
@@ -231,6 +228,38 @@ function sprayEnvParticle (type) {
               speedY: angleY * (Math.random() * waveSize + 0.95)
             }
 
+            game.engineParticles.push(particle)
+          }
+        }
+      }
+      break
+    case 'explosionColor':
+      colorAmountMin = 185
+      maxWaves = [12, 7, 5, 9, 3, 1, 11, 6, 4, 6]
+
+      for (let i = 0, j = maxWaves.length; i < j; ++i) maxWaves[i] = maxWaves[i] * ((Math.random() * 0.35) + 0.65)
+      let colors = [Math.ceil(colorAmountMin + (Math.random() * 128)), Math.ceil(colorAmountMin + (Math.random() * 128)), Math.ceil(colorAmountMin + (Math.random() * 128))]
+
+      if (xOffset !== undefined && yOffset !== undefined) {
+        srcX += Math.random() * xOffset
+        srcY += Math.random() * yOffset
+      }
+
+      for (let waveSize of maxWaves) {
+        for (let angle = 0; angle < 360; ++angle) {
+          let angleX = -Math.cos(angle / 180 * Math.PI)
+          let angleY = -Math.sin(angle / 180 * Math.PI)
+
+          for (let i = 0; i < game.landerParticleSprayCount * 0.00065; ++i) {
+            let particle = {
+              x: srcX,
+              y: srcY,
+              age: 0.8 + (waveSize * 0.0125),
+              speedX: angleX * (Math.random() * waveSize + 1),
+              speedY: angleY * (Math.random() * waveSize + 1)
+            }
+
+            if (i === 0) particle.color = colors
             game.engineParticles.push(particle)
           }
         }
@@ -295,20 +324,27 @@ function animateParticles () {
   for (let x = 0; x < particleSrcs.length; ++x) {
     let particles = particleSrcs[x]
     if (particles[0] === undefined) continue
+
+    let joinedColors = false
+    if (particles[0].color !== undefined) joinedColors = particles[0].color.join(',')
+
     for (let i = 0, count = particles.length; i < count; ++i) {
       let particle = particles[i]
       dc.beginPath()
       dc.arc(particle.x, particle.y, 2, 0, angle)
       particle.age -= 0.05
-      dc.strokeStyle = 'rgba(255,255,255,' + particle.age.toString() + ')'
-      dc.stroke()
 
       if (particle.age <= 0) {
+        dc.closePath()
         particles.splice(i, 1)
         --count
         --i
         continue
       }
+
+      if (joinedColors !== false) dc.strokeStyle = 'rgba(' + joinedColors + ',' + particle.age.toString() + ')'
+      else dc.strokeStyle = 'rgba(255,255,255,' + particle.age.toString() + ')'
+      dc.stroke()
 
       particle.x += particle.speedX
       particle.y += particle.speedY
@@ -367,13 +403,15 @@ function handleKeydown (evt) {
 
 function calculateWind () {
   if (!game.moonWindEnabled) return
-  game.moonWindAngle += (Math.random() * -1) * ((Math.random() * 30) - 15)
+  if (!game.finished) {
+    game.moonWindAngle += (Math.random() * -1) * ((Math.random() * 30) - 15)
 
-  game.moonWindStrengthX = Math.cos(game.moonWindAngle / 180 * Math.PI)
-  if (Math.abs(game.moonWindStrengthX) > game.moonWindMaxStrength) game.moonWindMaxStrengthX = game.moonWindStrengthX > 0 ? game.moonWindMaxStrength : -game.moonWindMaxStrength
+    game.moonWindStrengthX = Math.cos(game.moonWindAngle / 180 * Math.PI)
+    if (Math.abs(game.moonWindStrengthX) > game.moonWindMaxStrength) game.moonWindMaxStrengthX = game.moonWindStrengthX > 0 ? game.moonWindMaxStrength : -game.moonWindMaxStrength
 
-  game.moonWindStrengthY = Math.sin(game.moonWindAngle / 180 * Math.PI)
-  if (Math.abs(game.moonWindStrengthY) > game.moonWindMaxStrength) game.moonWindMaxStrengthX = game.moonWindStrengthY > 0 ? game.moonWindMaxStrength : -game.moonWindMaxStrength
+    game.moonWindStrengthY = Math.sin(game.moonWindAngle / 180 * Math.PI)
+    if (Math.abs(game.moonWindStrengthY) > game.moonWindMaxStrength) game.moonWindMaxStrengthX = game.moonWindStrengthY > 0 ? game.moonWindMaxStrength : -game.moonWindMaxStrength
+  }
 
   dc.translate(90, 60)
   dc.rotate((Math.PI / 180) * game.moonWindAngle)
@@ -529,6 +567,7 @@ function generateTerrain2 () {
 
 const stage = document.querySelector('#stage')
 const dc = stage.getContext('2d')
+dc.imageSmoothingEnabled = false
 
 let clearRect = new Path2D()
 clearRect.rect(0, 0, stage.width, stage.height)
@@ -542,6 +581,7 @@ let game = {
   preFetchTerrain: false,
   terrainMax: 0,
   hasTimeout: null,
+  animationInterval: null,
   moonWindEnabled: true,
   moonWindAngle: 0,
   moonWindMaxStrength: 2,
@@ -569,7 +609,11 @@ let game = {
 }
 
 // -----------------------------------------------
+
 function resetGame () {
+  if (game.animationInterval !== null) clearInterval(game.animationInterval)
+  game.animationInterval = null
+
   game.landerParticles.length = 0
   game.engineParticles.length = 0
   game.landerHitBoxes.length = 0
@@ -583,6 +627,7 @@ function resetGame () {
     preFetchTerrain: false,
     terrainMax: 0,
     hasTimeout: null,
+    animationInterval: null,
     moonWindEnabled: true,
     moonWindAngle: 0,
     moonWindMaxStrength: 2,
@@ -612,6 +657,8 @@ function resetGame () {
   dc.setTransform(1, 0, 0, 1, 0, 0)
 }
 
+// -----------------------------------------------
+
 function readUIOptionValues () {
   let optionFields = document.querySelectorAll('.optionValue')
   for (let option of optionFields) {
@@ -626,6 +673,8 @@ function readUIOptionValues () {
     }
   }
 }
+
+// -----------------------------------------------
 
 function resetTimeout () {
   clearTimeout(game.hasTimeout)
@@ -650,6 +699,13 @@ function restartGame () {
 }
 
 // -----------------------------------------------
+function animateWin () {
+  if (game.animationInterval === null) game.animationInterval = setInterval(animateWin, 1250)
+  if (game.engineParticles[0] === undefined) {
+    sprayEnvParticle('explosionColor', stage.width * 0.125, stage.height * 0.15, stage.width * 0.625, stage.height * 0.35)
+    window.requestAnimationFrame(draw)
+  }
+}
 for (let node of document.querySelectorAll('.optionValue')) node.addEventListener('change', readUIOptionValues)
 
 document.addEventListener('keydown', handleKeydown)
