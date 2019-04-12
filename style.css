@@ -1,6 +1,12 @@
 body {
-    background-color: #333;
+    background-color: #111120;
     color: #667;
+}
+
+.content {
+    width: 1400px;
+    text-align: center;
+    margin: 6% auto 2% auto;
 }
 
 canvas {
@@ -17,6 +23,9 @@ h1, h2, h3, h4 {
 input {
     margin: 0px;
     padding: 5px;
+    background-color: transparent;
+    border-radius: 12px;
+    padding-left: 12px;
 }
 
 #options {
@@ -26,13 +35,17 @@ input {
     margin-right: 32px;
     width: 21%;
     min-width: 170px;
+    text-align: left;
 }
 
 .optionsBlock {
-    border-bottom: 1px solid #446;
     padding: 19px 14px;
     width: 100%;
     display: inline-block;
+}
+
+.optionsBlock:first-of-type {
+    padding: 0px 14px 19px 14px;
 }
 
 .optionsBlock h4 {
