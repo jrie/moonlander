@@ -5,6 +5,8 @@ German discussion thread:
 
 [NGB.to Topic](https://ngb.to/threads/40532-Aufgabenstellung-Programmierwettbewerb-Nr-4)
 
+## Game video footage
+
 [![Game footage](https://www.picflash.org/img/2019/04/12/TBml5J5DIBP.webm.jpg "Game footage")](https://www.picflash.org/viewer.php?img=ml5J5DIBP.webm)
 
 ### References
