@@ -3,18 +3,28 @@ body {
     color: #667;
 }
 
-.content {
-    width: 1400px;
+body > h3,
+body > p {
     text-align: center;
-    margin: 6% auto 2% auto;
+}
+
+.content {
+    padding: 16px;
+    background-color: #323250;
+    width: 80%;
+    min-width: 1024px;
+    text-align: center;
+    margin: 1% auto 2% auto;
+    box-shadow:rgb(180,180,255) 0px 0px 14px;
+    border-radius: 14px;
 }
 
 canvas {
+    float:right;
     border: 1px solid #666;
 }
 
 h1, h2, h3, h4 {
-    clear: both;
     margin: 0px;
     padding: 0px;
     color: #889;
@@ -26,19 +36,23 @@ input {
     background-color: transparent;
     border-radius: 12px;
     padding-left: 12px;
+    border: none;
+    border: 1px solid #333;
+    box-shadow: 0px 0px 3px rgba(255,255,255,0.5);
 }
 
 #options {
-    float: left;
-    position: relative;
     padding-right: 12px;
     margin-right: 32px;
-    width: 21%;
-    min-width: 170px;
+    max-width: 30%;
+    width: 28%;
+    margin-right 2%;
     text-align: left;
+    display: block;
 }
 
 .optionsBlock {
+    clear: both;
     padding: 19px 14px;
     width: 100%;
     display: inline-block;
