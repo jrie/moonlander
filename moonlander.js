@@ -152,6 +152,7 @@ function draw () {
     dc.fillStyle = 'rgba(255,255,255,0.7)'
     dc.fillText('GAME WON', (stage.width * 0.5) - (dc.measureText('GAME WON').width * 0.5), stage.height * 0.42)
     dc.font = '10px sans-serif'
+    dc.fillText('PRESS "SPACE" KEY TO RESTART', (stage.width * 0.5) - (dc.measureText('PRESS "SPACE" KEY TO RESTART').width * 0.5), stage.height * 0.45)
 
     if (game.engineParticles.length === 0 && game.landerParticles.length === 0) return
   } else {
@@ -159,6 +160,7 @@ function draw () {
     dc.fillStyle = 'rgba(255,255,255,0.7)'
     dc.fillText('GAME LOST', (stage.width * 0.5) - (dc.measureText('GAME LOST').width * 0.5), stage.height * 0.42)
     dc.font = '10px sans-serif'
+    dc.fillText('PRESS "SPACE" KEY TO RESTART', (stage.width * 0.5) - (dc.measureText('PRESS "SPACE" KEY TO RESTART').width * 0.5), stage.height * 0.45)
 
     if (game.engineParticles.length === 0 && game.landerParticles.length === 0) return
   }
