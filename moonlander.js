@@ -127,7 +127,7 @@ function checkCollision () {
 // -----------------------------------------------
 
 function draw () {
-  if (!game.finished) {
+  if (!game.finished && game.landerFull > 0) {
     if (game.keyMap['37'] === true || game.keyMap['65'] === true) {
       game.landerAngle -= 1
       game.landerSpeedX += Math.cos((game.landerAngle - 90 - 55) / 180 * Math.PI) * 0.025
