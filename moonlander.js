@@ -127,6 +127,33 @@ function checkCollision () {
 // -----------------------------------------------
 
 function draw () {
+  if (!game.finished) {
+    if (game.keyMap['37'] === true || game.keyMap['65'] === true) {
+      game.landerAngle -= 1
+      game.landerSpeedX += Math.cos((game.landerAngle - 90 - 55) / 180 * Math.PI) * 0.025
+      game.landerSpeedY += Math.sin((game.landerAngle - 90 - 55) / 180 * Math.PI) * 0.025
+      game.landerFull -= game.fuelConsumption
+      if (Math.abs(game.landerAngle) >= 360) game.landerAngle = 360 - Math.abs(game.landerAngle)
+      sprayParticle(1)
+    }
+
+    if (game.keyMap['39'] === true || game.keyMap['68'] === true) {
+      game.landerAngle += 1
+      game.landerSpeedX -= Math.cos((game.landerAngle - 90 - 55) / 180 * Math.PI) * 0.025
+      game.landerSpeedY -= Math.sin((game.landerAngle - 90 - 55) / 180 * Math.PI) * 0.025
+      game.landerFull -= game.fuelConsumption
+      if (Math.abs(game.landerAngle) >= 360) game.landerAngle = 360 - Math.abs(game.landerAngle)
+      sprayParticle(2)
+    }
+
+    if (game.keyMap['38'] === true || game.keyMap['87'] === true) {
+      game.landerSpeedX += Math.cos((game.landerAngle - 90) / 180 * Math.PI) * 0.025
+      game.landerSpeedY += Math.sin((game.landerAngle - 90) / 180 * Math.PI) * 0.025
+      game.landerFull -= game.fuelConsumption
+      sprayParticle(0)
+    }
+  }
+
   if (game.hasTimeout !== null) return
   clearStage()
   if (game.terrainImg !== null) dc.putImageData(game.terrainImg, 0, stage.height - game.terrainImg.height)
@@ -354,7 +381,7 @@ function animateParticles () {
   }
 }
 
-function handleKeydown (evt) {
+function registerKey (evt) {
   if (evt.target.nodeName === 'INPUT') return
   if (game.landerFull <= 0) return
 
@@ -366,35 +393,52 @@ function handleKeydown (evt) {
       break
     case 37:
     case 65:
-      if (game.finished) return
-      game.landerAngle -= 1
-      game.landerSpeedX += Math.cos((game.landerAngle - 90 - 55) / 180 * Math.PI) * 0.025
-      game.landerSpeedY += Math.sin((game.landerAngle - 90 - 55) / 180 * Math.PI) * 0.025
-      game.landerFull -= game.fuelConsumption
-      if (Math.abs(game.landerAngle) >= 360) game.landerAngle = 360 - Math.abs(game.landerAngle)
-      sprayParticle(1)
+      game.keyMap[evt.keyCode.toString()] = true
       evt.stopPropagation()
       evt.preventDefault()
       break
     case 39:
     case 68:
-      if (game.finished) return
-      game.landerAngle += 1
-      game.landerSpeedX -= Math.cos((game.landerAngle - 90 - 55) / 180 * Math.PI) * 0.025
-      game.landerSpeedY -= Math.sin((game.landerAngle - 90 - 55) / 180 * Math.PI) * 0.025
-      game.landerFull -= game.fuelConsumption
-      if (Math.abs(game.landerAngle) >= 360) game.landerAngle = 360 - Math.abs(game.landerAngle)
-      sprayParticle(2)
+      game.keyMap[evt.keyCode.toString()] = true
       evt.stopPropagation()
       evt.preventDefault()
       break
     case 38:
     case 87:
-      if (game.finished) return
-      game.landerSpeedX += Math.cos((game.landerAngle - 90) / 180 * Math.PI) * 0.025
-      game.landerSpeedY += Math.sin((game.landerAngle - 90) / 180 * Math.PI) * 0.025
-      game.landerFull -= game.fuelConsumption
-      sprayParticle(0)
+      game.keyMap[evt.keyCode.toString()] = true
+      evt.stopPropagation()
+      evt.preventDefault()
+      break
+    default:
+      break
+  }
+}
+
+function unregisterKey (evt) {
+  if (evt.target.nodeName === 'INPUT') return
+  if (game.landerFull <= 0) return
+
+  switch (evt.keyCode) {
+    case 32:
+      evt.stopPropagation()
+      evt.preventDefault()
+      restartGame()
+      break
+    case 37:
+    case 65:
+      game.keyMap[evt.keyCode.toString()] = false
+      evt.stopPropagation()
+      evt.preventDefault()
+      break
+    case 39:
+    case 68:
+      game.keyMap[evt.keyCode.toString()] = false
+      evt.stopPropagation()
+      evt.preventDefault()
+      break
+    case 38:
+    case 87:
+      game.keyMap[evt.keyCode.toString()] = false
       evt.stopPropagation()
       evt.preventDefault()
       break
@@ -577,6 +621,7 @@ clearRect.rect(0, 0, stage.width, stage.height)
 const fuelConsumptionDivider = 0.00001
 
 let game = {
+  keyMap: {},
   terrainType: 1,
   terrain: new Path2D(),
   terrainImg: null,
@@ -623,6 +668,7 @@ function resetGame () {
   game.terrainImg = null
 
   game = {
+    keyMap: {},
     terrainType: 1,
     terrain: new Path2D(),
     terrainImg: null,
@@ -710,7 +756,8 @@ function animateWin () {
 }
 for (let node of document.querySelectorAll('.optionValue')) node.addEventListener('change', readUIOptionValues)
 
-document.addEventListener('keydown', handleKeydown)
+document.addEventListener('keydown', registerKey)
+document.addEventListener('keyup', unregisterKey)
 
 let lander = new Image()
 initLander()
