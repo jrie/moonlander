@@ -61,7 +61,7 @@ function checkCollision () {
     game.finished = true
     game.won = false
 
-    sprayEnvParticle('explosion')
+    sprayEnvParticle('explosion', game.landerX, game.landerY)
     window.requestAnimationFrame(draw)
     return
   }
