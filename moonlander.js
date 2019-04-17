@@ -59,7 +59,6 @@ function checkCollision () {
     game.won = false
 
     sprayEnvParticle('explosion', game.landerX, game.landerY)
-    window.requestAnimationFrame(draw)
     return
   }
 
@@ -69,6 +68,8 @@ function checkCollision () {
   let currentY = -game.landerHeight
   let scanMaxX = game.landerWidth
   let scanMaxY = game.landerHeight
+  let scanStepX = scanMaxX * 0.125
+  let scanStepY = scanMaxY * 0.25
 
   let newAngle = (Math.PI / 180) * game.landerAngle
 
@@ -112,11 +113,11 @@ function checkCollision () {
         dc.translate(-game.landerX, -game.landerY)
       }
 
-      ++currentX
+      currentX += scanStepX
     }
 
     currentX = -game.landerWidth * 0.5
-    ++currentY
+    currentY += scanStepY
   }
 
   dc.setTransform(1, 0, 0, 1, 0, 0)
@@ -343,10 +344,6 @@ function sprayParticle (direction) {
 }
 
 function animateParticles () {
-  let angle = 2 * Math.PI
-  dc.strokeStyle = 'rgba(255,255,255,0.75)'
-  dc.strokeWidth = 1
-
   for (let x = 0; x < 2; ++x) {
     let particles = (x === 0 ? game.landerParticles : game.engineParticles)
     if (particles[0] === undefined) continue
@@ -354,19 +351,23 @@ function animateParticles () {
     let joinedColors = false
     if (particles[0].color !== undefined) joinedColors = particles[0].color.join(',')
 
+    let angle = 2 * Math.PI
+    dc.strokeWidth = 1
+
     for (let i = 0, count = particles.length; i < count; ++i) {
       let particle = particles[i]
-      dc.beginPath()
-      dc.arc(particle.x, particle.y, 2, 0, angle)
       particle.age -= 0.05
 
       if (particle.age <= 0) {
-        dc.closePath()
         particles.splice(i, 1)
         --count
         --i
         continue
       }
+
+      dc.beginPath()
+      dc.arc(particle.x, particle.y, 2, 0, angle)
+      dc.closePath()
 
       if (joinedColors !== false) dc.strokeStyle = 'rgba(' + joinedColors + ',' + particle.age.toString() + ')'
       else dc.strokeStyle = 'rgba(255,255,255,' + particle.age.toString() + ')'
