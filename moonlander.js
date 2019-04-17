@@ -68,7 +68,7 @@ function checkCollision () {
   let currentY = -game.landerHeight
   let scanMaxX = game.landerWidth
   let scanMaxY = game.landerHeight
-  let scanStepX = scanMaxX * 0.125
+  let scanStepX = scanMaxX * 0.1
   let scanStepY = scanMaxY * 0.25
 
   let newAngle = (Math.PI / 180) * game.landerAngle
