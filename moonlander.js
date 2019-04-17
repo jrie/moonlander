@@ -9,6 +9,18 @@ function initLander () {
   function initLanderData () {
     game.landerWidth = lander.naturalWidth * game.landerScale
     game.landerHeight = lander.naturalHeight * game.landerScale
+    let hitboxLeft = new Path2D()
+    let hitboxRight = new Path2D()
+    let hitboxCenter = new Path2D()
+    let hitboxTop = new Path2D()
+
+    hitboxTop.arc(0, game.landerHeight * 0.25, game.landerHeight * 0.85, Math.PI * 1, 0)
+    hitboxLeft.rect(game.landerWidth * -0.5, game.landerHeight * 0.25, game.landerWidth * 0.3, game.landerHeight * 0.275)
+    hitboxRight.rect(game.landerWidth * 0.2, game.landerHeight * 0.25, game.landerWidth * 0.3, game.landerHeight * 0.275)
+    hitboxCenter.rect(game.landerWidth * -0.35, game.landerHeight * 0.35, game.landerWidth * 0.7, game.landerHeight * 0.175)
+
+    game.landerHitBoxes.length = 0
+    game.landerHitBoxes = [hitboxTop, hitboxLeft, hitboxRight, hitboxCenter]
   }
 
   game.landerSpeedX = 0
@@ -32,23 +44,8 @@ function drawLanderSVG () {
   dc.rotate(newAngle)
 
   dc.drawImage(lander, -(game.landerWidth * 0.5), -(game.landerHeight * 0.5), game.landerWidth, game.landerHeight)
-  let hitboxLeft = new Path2D()
-  let hitboxRight = new Path2D()
-  let hitboxCenter = new Path2D()
-  let hitboxTop = new Path2D()
-
-  hitboxTop.arc(0, game.landerHeight * 0.25, game.landerHeight * 0.85, Math.PI * 1, 0)
-  hitboxLeft.rect(game.landerWidth * -0.5, game.landerHeight * 0.25, game.landerWidth * 0.3, game.landerHeight * 0.275)
-  hitboxRight.rect(game.landerWidth * 0.2, game.landerHeight * 0.25, game.landerWidth * 0.3, game.landerHeight * 0.275)
-  hitboxCenter.rect(game.landerWidth * -0.35, game.landerHeight * 0.35, game.landerWidth * 0.7, game.landerHeight * 0.175)
-
-  game.landerHitBoxes.length = 0
-  game.landerHitBoxes = [hitboxTop, hitboxLeft, hitboxRight, hitboxCenter]
-
   // for (let hitbox of game.landerHitBoxes) dc.fill(hitbox)
 
-  dc.rotate(-newAngle)
-  dc.translate(-game.landerX, -game.landerY)
   dc.setTransform(1, 0, 0, 1, 0, 0)
 }
 
@@ -83,6 +80,7 @@ function checkCollision () {
 
         let hitboxes = 0
         let hitboxIndex = 0
+
         for (let hitbox of game.landerHitBoxes) {
           if (dc.isPointInPath(hitbox, game.landerX + currentX, game.landerY + currentY)) {
             ++hitboxes
@@ -349,9 +347,8 @@ function animateParticles () {
   dc.strokeStyle = 'rgba(255,255,255,0.75)'
   dc.strokeWidth = 1
 
-  let particleSrcs = [game.landerParticles, game.engineParticles]
-  for (let x = 0; x < particleSrcs.length; ++x) {
-    let particles = particleSrcs[x]
+  for (let x = 0; x < 2; ++x) {
+    let particles = (x === 0 ? game.landerParticles : game.engineParticles)
     if (particles[0] === undefined) continue
 
     let joinedColors = false
