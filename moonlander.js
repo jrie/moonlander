@@ -30,8 +30,7 @@ function initLander () {
 // -----------------------------------------------
 
 function clearStage () {
-  dc.clip(clearRect)
-  dc.fillStyle = 'rgba(50,50,70,1)'
+  dc.fillStyle = '#323246'
   dc.fill(clearRect)
 }
 
@@ -98,7 +97,6 @@ function checkCollision () {
             game.won = false
             dc.resetTransform()
             sprayEnvParticle('explosion', game.landerX, game.landerY)
-            window.requestAnimationFrame(draw)
             return
           } else if (hitboxes >= 2) {
             game.won = true
@@ -381,7 +379,6 @@ function animateParticles () {
 
 function registerKey (evt) {
   if (evt.target.nodeName === 'INPUT') return
-  if (game.landerFull <= 0) return
 
   switch (evt.keyCode) {
     case 32:
@@ -391,18 +388,21 @@ function registerKey (evt) {
       break
     case 37:
     case 65:
+      if (game.landerFull <= 0) return
       game.keyMap[evt.keyCode.toString()] = true
       evt.stopPropagation()
       evt.preventDefault()
       break
     case 39:
     case 68:
+      if (game.landerFull <= 0) return
       game.keyMap[evt.keyCode.toString()] = true
       evt.stopPropagation()
       evt.preventDefault()
       break
     case 38:
     case 87:
+      if (game.landerFull <= 0) return
       game.keyMap[evt.keyCode.toString()] = true
       evt.stopPropagation()
       evt.preventDefault()
@@ -414,7 +414,6 @@ function registerKey (evt) {
 
 function unregisterKey (evt) {
   if (evt.target.nodeName === 'INPUT') return
-  if (game.landerFull <= 0) return
 
   switch (evt.keyCode) {
     case 32:
@@ -424,18 +423,21 @@ function unregisterKey (evt) {
       break
     case 37:
     case 65:
+      if (game.landerFull <= 0) return
       game.keyMap[evt.keyCode.toString()] = false
       evt.stopPropagation()
       evt.preventDefault()
       break
     case 39:
     case 68:
+      if (game.landerFull <= 0) return
       game.keyMap[evt.keyCode.toString()] = false
       evt.stopPropagation()
       evt.preventDefault()
       break
     case 38:
     case 87:
+      if (game.landerFull <= 0) return
       game.keyMap[evt.keyCode.toString()] = false
       evt.stopPropagation()
       evt.preventDefault()
@@ -610,7 +612,7 @@ function generateTerrain2 () {
 // -----------------------------------------------
 
 const stage = document.querySelector('#stage')
-const dc = stage.getContext('2d')
+const dc = stage.getContext('2d', { alpha: false })
 dc.imageSmoothingEnabled = false
 
 let clearRect = new Path2D()
